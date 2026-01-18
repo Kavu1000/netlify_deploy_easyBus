@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { HashRouter, Routes, Route } from "react-router-dom"
 import { AuthProvider } from "@/contexts/AuthContext"
 
 // Pages
@@ -17,7 +17,7 @@ import BookingSuccessPage from "@/pages/BookingSuccessPage"
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <HashRouter>
         <Routes>
           {/* Multi-step Booking Flow */}
           <Route path="/" element={<SelectVehiclePage />} />
@@ -36,7 +36,7 @@ export default function App() {
           <Route path="/booking/:id" element={<BookingDetailPage />} />
           <Route path="/booking-success" element={<BookingSuccessPage />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </AuthProvider>
   )
 }
