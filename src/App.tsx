@@ -17,7 +17,7 @@ import BookingSuccessPage from "@/pages/BookingSuccessPage"
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Routes>
           {/* Multi-step Booking Flow */}
           <Route path="/" element={<SelectVehiclePage />} />
