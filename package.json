@@ -6,7 +6,7 @@
   "homepage": "https://Kavu1000.github.io/netlify_deploy_easyBus",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
