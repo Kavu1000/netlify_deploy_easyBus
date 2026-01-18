@@ -1,4 +1,5 @@
 import { Shield, Clock, CreditCard, Headphones, Bus, MapPin } from "lucide-react"
+import busBg from "@/assets/bus-bg.png"
 
 const features = [
     {
@@ -104,7 +105,7 @@ export default function AboutSection() {
                         </div>
                         <div className="relative h-64 lg:h-96 rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border border-primary/20">
                             <img
-                                src="/modern-bus-interior-with-comfortable-seats.jpg"
+                                src={busBg}
                                 alt="Modern bus interior"
                                 className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
                             />
