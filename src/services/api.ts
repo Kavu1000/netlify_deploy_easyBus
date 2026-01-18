@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
     // baseURL: 'https://easy-bus-backend-1.onrender.com/api',
-    baseURL: 'http://localhost:8000/api', // Use local backend
+    baseURL: 'https://bus-api.nkaujntseeg.com/api', // Use custom domain backend
     headers: {
         'Content-Type': 'application/json',
     },
