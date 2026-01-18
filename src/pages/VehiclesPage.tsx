@@ -45,24 +45,24 @@ export default function VehiclesPage() {
                 // For now, we fetch all and let user see.
                 // Or pass from/to which are more important.
 
-                const response = await api.get('/buses', {
+                const response = await api.get('/schedules', {
                     params: {
                         from: from,
                         to: to,
-                        // type: vehicleType === 'bus' ? 'AC' : undefined // Optional
+                        date: date // also pass date if available
                     }
                 })
 
                 if (response.data.success) {
                     // Map API data to UI format
-                    const mappedVehicles = response.data.data.map((bus: any) => ({
-                        id: bus._id,
-                        name: bus.name || `Bus ${bus.busNumber || 'Unknown'}`,
-                        company: bus.company || "Easy Bus Fleet",
-                        price: bus.pricePerSeat || 150000,
-                        duration: "5h 00m", // Mock
-                        departure: "08:00 AM", // Mock
-                        seats: bus.capacity - (bus.bookedSeats?.length || 0) || bus.capacity || 40,
+                    const mappedVehicles = response.data.data.map((schedule: any) => ({
+                        id: schedule.busId?._id || schedule._id, // Use Bus ID (preferred) or Schedule ID as fallback
+                        name: schedule.busId?.name || `Bus ${schedule.busId?.licensePlate || 'Unknown'}`,
+                        company: schedule.busId?.company || "Easy Bus Fleet",
+                        price: schedule.price || schedule.pricePerSeat || 150000,
+                        duration: schedule.duration || "5h 00m",
+                        departure: schedule.departureTime || "08:00 AM",
+                        seats: schedule.availableSeats || 40,
                         rating: 4.5
                     }))
                     setVehicles(mappedVehicles)
@@ -125,7 +125,7 @@ export default function VehiclesPage() {
                     {loading ? (
                         <div className="text-center py-20">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                            <p className="text-muted-foreground">Finding available {vehicle.name.toLowerCase()}s...</p>
+                            <p className="text-muted-foreground">Finding available {vehicle.name === 'Bus' ? 'buses' : vehicle.name.toLowerCase() + 's'}...</p>
                         </div>
                     ) : error ? (
                         <div className="text-center py-20">

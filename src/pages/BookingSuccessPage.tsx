@@ -27,9 +27,10 @@ const BookingSuccessPage = () => {
                 // Then fetch booking details
                 const response = await api.get(`/bookings/order/${orderNo}`);
                 setBookings(response.data.data);
-            } catch (err) {
+            } catch (err: any) {
                 console.error("Failed to process booking success:", err);
-                setError("Failed to load booking details");
+                const msg = err.response?.data?.message || err.message || "Failed to load booking details";
+                setError(`${msg} (Status: ${err.response?.status})`);
             } finally {
                 setLoading(false);
             }

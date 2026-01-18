@@ -104,8 +104,6 @@ export default function PaymentPage() {
                         gender: "other"
                     },
                     paymentMethod: "card"
-                }, {
-                    headers: { Authorization: `Bearer ${token}` }
                 })
             });
 
@@ -113,6 +111,7 @@ export default function PaymentPage() {
 
             // Extract booking IDs from the responses
             const bookingIds = bookingResults.map(res => res.data.data._id);
+            console.log("Created Booking IDs:", bookingIds);
 
             // Call PhaJay payment gateway - /api/payment/create-link
             try {
@@ -120,8 +119,6 @@ export default function PaymentPage() {
                     bookingIds,
                     amount: booking.price,
                     description: `Bus ticket: ${from} to ${to} - Seats: ${seatsList.join(', ')}`
-                }, {
-                    headers: { Authorization: `Bearer ${token}` }
                 });
 
                 if (paymentRes.data.success && paymentRes.data.data.redirectURL) {
@@ -136,12 +133,12 @@ export default function PaymentPage() {
 
             // Fallback: Navigate to ticket page if payment link creation fails
             navigate(`/ticket/${id}?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${date}&name=${encodeURIComponent(formData.name)}&seats=${seats}&price=${booking.price}`)
-        } catch (err) {
+        } catch (err: any) {
             console.error("Booking failed", err)
-            // For "Connect 3 folder" demo, we proceed even if API fails (mockish behavior) 
-            // OR alert user. 
-            // Better to show alert.
-            alert("Booking failed. Please ensure Backend is running and seats are available.")
+            console.log("Failed Booking Payload:", { busId: id, from, to, date, seats: booking.seats });
+
+            const errorMessage = err.response?.data?.message || err.message || "Booking failed";
+            alert(`Booking Error: ${errorMessage}\nStatus: ${err.response?.status}`);
         } finally {
             setIsProcessing(false)
         }

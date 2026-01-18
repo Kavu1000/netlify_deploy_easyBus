@@ -5,6 +5,10 @@ import Footer from "@/components/footer"
 import ScheduleSection from "@/components/schedule-section"
 import AboutSection from "@/components/about-section"
 
+import busBg from "@/assets/bus-bg.png"
+import vanBg from "@/assets/van-bg.png"
+import tuktukBg from "@/assets/tuktuk-bg.png"
+
 const vehicleTypes = [
     {
         id: "bus",
@@ -13,7 +17,7 @@ const vehicleTypes = [
         description: "Comfortable long-distance travel",
         features: ["Air Conditioning", "WiFi", "Reclining Seats", "Restroom"],
         priceRange: "50,000 - 200,000 LAK",
-        image: "/bus-bg.png"
+        image: busBg
     },
     {
         id: "van",
@@ -22,7 +26,7 @@ const vehicleTypes = [
         description: "Flexible group transport",
         features: ["Private Ride", "Door-to-Door", "Luggage Space", "Flexible Schedule"],
         priceRange: "100,000 - 300,000 LAK",
-        image: "/van-bg.png"
+        image: vanBg
     },
     {
         id: "tuktuk",
@@ -31,7 +35,7 @@ const vehicleTypes = [
         description: "Quick city rides",
         features: ["Fast Service", "City Tours", "Affordable", "Local Experience"],
         priceRange: "20,000 - 80,000 LAK",
-        image: "/tuktuk-bg.png"
+        image: tuktukBg
     },
 ]
 
