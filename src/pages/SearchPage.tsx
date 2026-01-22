@@ -1,8 +1,10 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { MapPin, Calendar, Search, Bus, Car, Bike, ArrowLeft } from "lucide-react"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
+import SearchableDropdown from "@/components/SearchableDropdown"
+import api from "@/api/axios"
 
 const vehicleInfo: Record<string, { name: string; icon: any; color: string }> = {
     bus: { name: "Bus", icon: Bus, color: "from-blue-500 to-blue-600" },
@@ -20,6 +22,24 @@ export default function SearchPage() {
     const [from, setFrom] = useState("")
     const [to, setTo] = useState("")
     const [date, setDate] = useState(new Date().toISOString().split("T")[0])
+    const [cities, setCities] = useState<string[]>([])
+
+    // Fetch available cities from the API
+    useEffect(() => {
+        const fetchCities = async () => {
+            try {
+                const response = await api.get('/schedules/cities')
+                if (response.data.success) {
+                    setCities(response.data.data)
+                }
+            } catch (error) {
+                console.error("Failed to fetch cities:", error)
+                // Fallback to some default cities if API fails
+                setCities(["Vientiane", "Luang Prabang", "Pakse", "Savannakhet", "Thakhek"])
+            }
+        }
+        fetchCities()
+    }, [])
 
     const handleSearch = () => {
         navigate(`/vehicles?vehicle=${vehicleType}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${date}`)
@@ -76,38 +96,24 @@ export default function SearchPage() {
                     <div className="bg-card rounded-2xl border border-border p-8 shadow-xl">
                         <div className="space-y-6">
                             {/* From */}
-                            <div>
-                                <label className="block text-sm font-semibold text-foreground mb-3">
-                                    From
-                                </label>
-                                <div className="relative">
-                                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary" />
-                                    <input
-                                        type="text"
-                                        value={from}
-                                        onChange={(e) => setFrom(e.target.value)}
-                                        placeholder="Enter departure city"
-                                        className="w-full bg-input/50 text-foreground pl-12 pr-4 py-4 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-muted-foreground"
-                                    />
-                                </div>
-                            </div>
+                            <SearchableDropdown
+                                label="From"
+                                value={from}
+                                onChange={setFrom}
+                                options={cities}
+                                placeholder="Enter departure city"
+                                icon={MapPin}
+                            />
 
                             {/* To */}
-                            <div>
-                                <label className="block text-sm font-semibold text-foreground mb-3">
-                                    To
-                                </label>
-                                <div className="relative">
-                                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary" />
-                                    <input
-                                        type="text"
-                                        value={to}
-                                        onChange={(e) => setTo(e.target.value)}
-                                        placeholder="Enter destination city"
-                                        className="w-full bg-input/50 text-foreground pl-12 pr-4 py-4 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-muted-foreground"
-                                    />
-                                </div>
-                            </div>
+                            <SearchableDropdown
+                                label="To"
+                                value={to}
+                                onChange={setTo}
+                                options={cities}
+                                placeholder="Enter destination city"
+                                icon={MapPin}
+                            />
 
                             {/* Date */}
                             <div>
