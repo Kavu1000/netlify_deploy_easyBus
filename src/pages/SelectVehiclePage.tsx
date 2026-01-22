@@ -16,7 +16,7 @@ const vehicleTypes = [
         icon: Bus,
         description: "Comfortable long-distance travel",
         features: ["Air Conditioning", "WiFi", "Reclining Seats", "Restroom"],
-        priceRange: "50,000 - 200,000 LAK",
+        priceRange: "100,000 - 300,000 LAK",
         image: busBg
     },
     {
@@ -25,7 +25,7 @@ const vehicleTypes = [
         icon: Car,
         description: "Flexible group transport",
         features: ["Private Ride", "Door-to-Door", "Luggage Space", "Flexible Schedule"],
-        priceRange: "100,000 - 300,000 LAK",
+        priceRange: "100,000 - 200,000 LAK",
         image: vanBg
     },
     {
@@ -34,7 +34,7 @@ const vehicleTypes = [
         icon: Bike,
         description: "Quick city rides",
         features: ["Fast Service", "City Tours", "Affordable", "Local Experience"],
-        priceRange: "20,000 - 80,000 LAK",
+        priceRange: "50,000 - 100,000 LAK",
         image: tuktukBg
     },
 ]

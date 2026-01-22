@@ -56,7 +56,7 @@ export default function VehiclesPage() {
                 if (response.data.success) {
                     // Map API data to UI format
                     const mappedVehicles = response.data.data.map((schedule: any) => ({
-                        id: schedule.busId?._id || schedule._id, // Use Bus ID (preferred) or Schedule ID as fallback
+                        id: schedule._id, // Use Schedule ID so next page gets price/time info
                         name: schedule.busId?.name || `Bus ${schedule.busId?.licensePlate || 'Unknown'}`,
                         company: schedule.busId?.company || "Easy Bus Fleet",
                         price: schedule.price || schedule.pricePerSeat || 150000,

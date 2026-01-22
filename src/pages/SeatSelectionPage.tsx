@@ -27,40 +27,42 @@ export default function SeatSelectionPage() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const fetchSeatData = async () => {
-            // If ID is mock/undefined, skip or handle gracefully.
-            // Our VehiclesPage passes the real ID now.
+        const fetchData = async () => {
             if (!id) return;
 
             try {
-                const response = await api.get(`/buses/${id}/seats`)
-                if (response.data.success) {
-                    const seats = response.data.data.seats || [];
-                    // If seats array doesn't exist, check if bookedSeats exists on the bus object?
-                    // API Doc says data has bookedSeats count or array? 
-                    // My curl showed data is the bus object.
-                    // It might have 'bookedSeats' array of strings?
-                    // Let's check both possibilities basically.
+                // 1. Fetch Schedule Details first
+                const scheduleRes = await api.get(`/schedules/${id}`)
+                if (scheduleRes.data.success) {
+                    const schedule = scheduleRes.data.data
+                    setBasePrice(schedule.price || schedule.pricePerSeat || 150000)
 
-                    let booked: string[] = [];
-                    if (Array.isArray(seats) && seats.length > 0) {
-                        booked = seats.filter((s: any) => s.isBooked).map((s: any) => s.seatNumber)
-                    } else if (response.data.data.bookedSeats && Array.isArray(response.data.data.bookedSeats)) {
-                        // Fallback if API returns simple bookedSeats array
-                        booked = response.data.data.bookedSeats;
+                    // 2. Fetch Seats using the busId from schedule
+                    const busId = schedule.busId?._id || schedule.busId
+                    if (busId) {
+                        const seatsRes = await api.get(`/buses/${busId}/seats`)
+
+                        if (seatsRes.data.success) {
+                            const seats = seatsRes.data.data.seats || [];
+                            let booked: string[] = [];
+
+                            if (Array.isArray(seats) && seats.length > 0) {
+                                booked = seats.filter((s: any) => s.isBooked).map((s: any) => s.seatNumber)
+                            } else if (seatsRes.data.data.bookedSeats && Array.isArray(seatsRes.data.data.bookedSeats)) {
+                                booked = seatsRes.data.data.bookedSeats;
+                            }
+
+                            setOccupiedSeats(booked)
+                        }
                     }
-
-                    setOccupiedSeats(booked)
                 }
             } catch (err) {
-                console.error("Failed to fetch seats", err)
-                // Fallback to empty or mock if backend fails?
-                // For now, empty means all available.
+                console.error("Failed to fetch data", err)
             } finally {
                 setLoading(false)
             }
         }
-        fetchSeatData()
+        fetchData()
     }, [id])
 
     const toggleSeat = (seatId: string) => {
