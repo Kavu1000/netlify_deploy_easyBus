@@ -143,23 +143,34 @@ const BookingSuccessPage = () => {
 
                     {/* Passengers & Seats */}
                     <div className="p-6 border-b border-border bg-muted/10">
-                        <h3 className="font-semibold mb-4 flex items-center gap-2">
-                            <User className="w-4 h-4" /> Passenger Details
-                        </h3>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-semibold flex items-center gap-2">
+                                <User className="w-4 h-4" /> Passenger Details
+                            </h3>
+                            <span className="text-sm text-primary font-semibold bg-primary/10 px-3 py-1.5 rounded-full">
+                                {bookings.length} Ticket{bookings.length > 1 ? 's' : ''}
+                            </span>
+                        </div>
                         <div className="space-y-3">
                             {bookings.map((booking, index) => (
-                                <div key={booking._id} className="flex justify-between items-center text-sm">
-                                    <div className="flex items-center gap-3">
-                                        <span className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-medium">
-                                            {index + 1}
-                                        </span>
-                                        <span className="font-medium">{booking.passengerDetails?.name || booking.userId.username}</span>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="bg-background border border-border px-2 py-1 rounded text-xs">
-                                            Seat {booking.seatNumber}
-                                        </span>
-                                        <span className="font-medium">{booking.price.toLocaleString()} LAK</span>
+                                <div key={booking._id} className="bg-background rounded-lg p-4 border border-border">
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex items-start gap-3">
+                                            <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
+                                                {booking.seatNumber}
+                                            </span>
+                                            <div>
+                                                <p className="font-semibold text-foreground mb-1">{booking.passengerDetails?.name || booking.userId.username}</p>
+                                                <div className="flex gap-4 text-xs text-muted-foreground">
+                                                    {booking.passengerDetails?.age && <span>Age: {booking.passengerDetails.age}</span>}
+                                                    {booking.passengerDetails?.gender && <span className="capitalize">{booking.passengerDetails.gender}</span>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="font-bold text-primary">{booking.price.toLocaleString()} LAK</p>
+                                            <p className="text-xs text-muted-foreground mt-1">Seat {booking.seatNumber}</p>
+                                        </div>
                                     </div>
                                 </div>
                             ))}

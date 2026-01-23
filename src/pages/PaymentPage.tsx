@@ -22,7 +22,6 @@ export default function PaymentPage() {
         email: "",
         phone: "",
     })
-    const [isProcessing, setIsProcessing] = useState(false)
 
     // Mock booking data
     const booking = {
@@ -35,8 +34,38 @@ export default function PaymentPage() {
         seats: seats ? seats.split(",") : []
     }
 
+    // State for individual passenger details for each seat
+    const [passengerDetails, setPassengerDetails] = useState<Array<{
+        name: string
+        age: number | string
+        gender: "male" | "female" | "other"
+    }>>(
+        booking.seats.map((_, index) => ({
+            name: index === 0 ? "" : "",
+            age: "",
+            gender: "other" as const
+        }))
+    )
+
+    const [isProcessing, setIsProcessing] = useState(false)
+
+    // Auto-populate first passenger with contact person details when name changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value })
+        const updatedFormData = { ...formData, [e.target.name]: e.target.value }
+        setFormData(updatedFormData)
+
+        // Auto-fill first passenger name from contact person
+        if (e.target.name === "name" && passengerDetails.length > 0) {
+            const updatedPassengers = [...passengerDetails]
+            updatedPassengers[0] = { ...updatedPassengers[0], name: e.target.value }
+            setPassengerDetails(updatedPassengers)
+        }
+    }
+
+    const handlePassengerChange = (index: number, field: string, value: string | number) => {
+        const updatedPassengers = [...passengerDetails]
+        updatedPassengers[index] = { ...updatedPassengers[index], [field]: value }
+        setPassengerDetails(updatedPassengers)
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -83,12 +112,14 @@ export default function PaymentPage() {
             const seatsList = booking.seats;
             const pricePerSeat = seatsList.length > 0 ? Math.floor(booking.price / seatsList.length) : booking.price;
 
-            // Submit a ticket for each selected seat
-            const bookingPromises = seatsList.map(seat => {
+            // Submit a ticket for each selected seat with individual passenger details
+            const bookingPromises = seatsList.map((seat, index) => {
                 let depTime = new Date().toISOString();
                 try {
                     depTime = new Date(`${date} ${booking.departure}`).toISOString();
                 } catch (e) { }
+
+                const passenger = passengerDetails[index] || passengerDetails[0];
 
                 return api.post('/bookings', {
                     busId: id,
@@ -99,9 +130,9 @@ export default function PaymentPage() {
                     arrivalTime: new Date(new Date(depTime).getTime() + 4 * 60 * 60 * 1000).toISOString(),
                     price: pricePerSeat,
                     passengerDetails: {
-                        name: formData.name,
-                        age: 30,
-                        gender: "other"
+                        name: passenger.name || formData.name,
+                        age: passenger.age || 30,
+                        gender: passenger.gender || "other"
                     },
                     paymentMethod: "card"
                 })
@@ -276,6 +307,83 @@ export default function PaymentPage() {
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* Passenger Details for Each Ticket */}
+                                {booking.seats.length > 0 && (
+                                    <div className="bg-card rounded-xl border border-border p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h3 className="text-lg font-bold text-foreground">Passenger Details</h3>
+                                            <span className="text-sm text-primary font-semibold bg-primary/10 px-3 py-1 rounded-full">
+                                                {booking.seats.length} Ticket{booking.seats.length > 1 ? 's' : ''}
+                                            </span>
+                                        </div>
+
+                                        <div className="space-y-6">
+                                            {booking.seats.map((seat, index) => (
+                                                <div key={seat} className="border border-border rounded-lg p-4 bg-background/50">
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                                            <span className="text-sm font-bold text-primary">{seat}</span>
+                                                        </div>
+                                                        <h4 className="font-semibold text-foreground">
+                                                            {index === 0 ? "Main Passenger" : `Passenger ${index + 1}`}
+                                                        </h4>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                        <div className="md:col-span-2">
+                                                            <label className="block text-sm font-medium text-foreground mb-2">
+                                                                Full Name {index === 0 && <span className="text-muted-foreground text-xs">(Auto-filled from contact)</span>}
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={passengerDetails[index]?.name || ""}
+                                                                onChange={(e) => handlePassengerChange(index, "name", e.target.value)}
+                                                                required
+                                                                placeholder="Enter passenger name"
+                                                                disabled={index === 0}
+                                                                className="w-full bg-input/50 text-foreground px-4 py-2.5 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+                                                            />
+                                                        </div>
+
+                                                        <div>
+                                                            <label className="block text-sm font-medium text-foreground mb-2">Age</label>
+                                                            <input
+                                                                type="number"
+                                                                value={passengerDetails[index]?.age || ""}
+                                                                onChange={(e) => handlePassengerChange(index, "age", parseInt(e.target.value) || "")}
+                                                                required
+                                                                min="1"
+                                                                max="120"
+                                                                placeholder="Age"
+                                                                className="w-full bg-input/50 text-foreground px-4 py-2.5 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
+                                                            />
+                                                        </div>
+
+                                                        <div className="md:col-span-3">
+                                                            <label className="block text-sm font-medium text-foreground mb-2">Gender</label>
+                                                            <div className="flex gap-3">
+                                                                {["male", "female", "other"].map((g) => (
+                                                                    <label key={g} className="flex items-center gap-2 cursor-pointer">
+                                                                        <input
+                                                                            type="radio"
+                                                                            name={`gender-${index}`}
+                                                                            value={g}
+                                                                            checked={passengerDetails[index]?.gender === g}
+                                                                            onChange={(e) => handlePassengerChange(index, "gender", e.target.value)}
+                                                                            className="w-4 h-4 text-primary focus:ring-primary"
+                                                                        />
+                                                                        <span className="text-sm text-foreground capitalize">{g}</span>
+                                                                    </label>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Submit Button */}
                                 <button

@@ -157,6 +157,7 @@ export default function SeatSelectionPage() {
                                 Step 4 of 5
                             </span>
                             <h1 className="text-2xl font-bold text-foreground">Select Your Seats</h1>
+                            <p className="text-sm text-muted-foreground mt-1">You can select up to 5 seats</p>
                         </div>
                     </div>
 
@@ -202,6 +203,10 @@ export default function SeatSelectionPage() {
                                         <span className="font-medium text-foreground capitalize">{vehicleType}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-sm">
+                                        <span className="text-muted-foreground">Number of Tickets</span>
+                                        <span className="font-bold text-primary text-lg">{selectedSeats.length || 0}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm">
                                         <span className="text-muted-foreground">Seats Selected</span>
                                         <span className="font-medium text-foreground">{selectedSeats.length > 0 ? selectedSeats.join(", ") : "-"}</span>
                                     </div>
@@ -213,6 +218,13 @@ export default function SeatSelectionPage() {
                                         <span className="text-lg font-bold text-foreground">Total</span>
                                         <span className="text-2xl font-bold text-primary">{totalPrice.toLocaleString()} LAK</span>
                                     </div>
+                                    {selectedSeats.length > 1 && (
+                                        <div className="bg-primary/10 rounded-lg p-3 text-center">
+                                            <p className="text-xs text-primary font-semibold">
+                                                🎟️ Booking {selectedSeats.length} tickets
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <button
