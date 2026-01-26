@@ -2,7 +2,8 @@ import axios from 'axios';
 
 // Create axios instance with base URL
 const api = axios.create({
-    baseURL: 'https://bus-api.nkaujntseeg.com/api', // Use custom domain backend
+    // baseURL: 'https://bus-api.nkaujntseeg.com/api', // Use custom domain backend
+    baseURL: 'http://localhost:8000/api', // Use local backend for debugging
     headers: {
         'Content-Type': 'application/json',
     },

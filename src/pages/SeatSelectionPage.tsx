@@ -83,7 +83,17 @@ export default function SeatSelectionPage() {
     const totalPrice = selectedSeats.length * basePrice
 
     const handleConfirmSeats = () => {
-        if (selectedSeats.length === 0) return
+        if (selectedSeats.length === 0) {
+            alert("Please select at least one seat before proceeding.")
+            return
+        }
+
+        // Validate that we have a valid schedule ID before proceeding
+        if (!id || id.length !== 24) {
+            alert("Invalid schedule. Please go back and select a bus again.")
+            navigate('/search')
+            return
+        }
 
         const seatsParam = selectedSeats.join(",")
         navigate(`/payment/${id}?vehicle=${vehicleType}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${date}&seats=${seatsParam}&price=${totalPrice}`)

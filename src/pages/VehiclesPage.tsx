@@ -54,24 +54,43 @@ export default function VehiclesPage() {
                 })
 
                 if (response.data.success) {
-                    // Map API data to UI format
-                    const mappedVehicles = response.data.data.map((schedule: any) => ({
-                        id: schedule._id, // Use Schedule ID so next page gets price/time info
-                        name: schedule.busId?.name || `Bus ${schedule.busId?.licensePlate || 'Unknown'}`,
-                        company: schedule.busId?.company || "Easy Bus Fleet",
-                        price: schedule.price || schedule.pricePerSeat || 150000,
-                        duration: schedule.duration || "5h 00m",
-                        departure: schedule.departureTime || "08:00 AM",
-                        seats: schedule.availableSeats || 40,
-                        rating: 4.5
-                    }))
+                    // Map API data to UI format and validate schedule data
+                    const mappedVehicles = response.data.data
+                        .filter((schedule: any) => {
+                            // Only include schedules with valid bus information
+                            if (!schedule._id || !schedule.busId) {
+                                console.warn('Skipping schedule with missing ID or bus:', schedule)
+                                return false
+                            }
+                            return true
+                        })
+                        .map((schedule: any) => ({
+                            id: schedule._id, // Use Schedule ID so next page gets price/time info
+                            name: schedule.busId?.name || `Bus ${schedule.busId?.licensePlate || 'Unknown'}`,
+                            company: schedule.busId?.company || "Easy Bus Fleet",
+                            price: schedule.price || schedule.pricePerSeat || 150000,
+                            duration: schedule.duration || "5h 00m",
+                            departure: schedule.departureTime || "08:00 AM",
+                            seats: schedule.availableSeats || 40,
+                            rating: 4.5
+                        }))
                     setVehicles(mappedVehicles)
+
+                    if (mappedVehicles.length === 0) {
+                        setError("No valid schedules found for this route. Please try a different search.")
+                    }
                 } else {
-                    setError("Failed to fetch vehicles")
+                    setError("Failed to fetch schedules. Please try again.")
                 }
-            } catch (err) {
-                console.error(err)
-                setError("Could not connect to server. Ensure backend is running.")
+            } catch (err: any) {
+                console.error("Error fetching schedules:", err)
+                if (err.response?.status === 404) {
+                    setError("No schedules found for this route. Try different cities or dates.")
+                } else if (err.message?.includes("Network Error")) {
+                    setError("Cannot connect to server. Please check your internet connection and ensure the backend is running.")
+                } else {
+                    setError("Failed to load schedules. Please try again later.")
+                }
             } finally {
                 setLoading(false)
             }
@@ -81,6 +100,12 @@ export default function VehiclesPage() {
     }, [from, to, vehicleType])
 
     const handleSelectSeat = (vehicleId: string) => {
+        // Validate vehicle/schedule ID before proceeding
+        if (!vehicleId || vehicleId.length !== 24) {
+            alert("Invalid schedule selected. Please try again.")
+            return
+        }
+
         navigate(`/seats/${vehicleId}?vehicle=${vehicleType}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${date}`)
     }
 
