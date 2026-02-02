@@ -197,14 +197,27 @@ export default function PaymentPage() {
             const bookingPromises = seatsList.map((seat: string, index: number) => {
                 let depTime = new Date().toISOString();
                 try {
-                    // Use schedule departure time if available
-                    if (bookingDetails.departureTime) {
-                        depTime = bookingDetails.departureTime;
-                    } else if (bookingDetails.departure) {
-                        // Fallback parsing if string
-                        depTime = new Date(`${date} ${bookingDetails.departure}`).toISOString();
+                    // Get base date from URL param or schedule details
+                    let baseDateStr = date;
+                    if (!baseDateStr && bookingDetails.date) {
+                        try {
+                            baseDateStr = new Date(bookingDetails.date).toISOString().split('T')[0];
+                        } catch (e) {
+                            baseDateStr = new Date().toISOString().split('T')[0];
+                        }
                     }
-                } catch (e) { }
+
+                    // Get time string
+                    const timeStr = bookingDetails.departureTime || bookingDetails.departure || "08:00";
+
+                    // Combine date and time
+                    // "2023-01-01 08:30" or "2023-01-01 8:30 PM" works in most browsers
+                    depTime = new Date(`${baseDateStr} ${timeStr}`).toISOString();
+                } catch (e) {
+                    console.error("Date parsing failed", e);
+                    // Fallback to now if parsing fails to avoid crash
+                    depTime = new Date().toISOString();
+                }
 
                 const passenger = passengerDetails[index] || passengerDetails[0];
 

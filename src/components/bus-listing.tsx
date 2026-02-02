@@ -407,7 +407,7 @@ function BusCard({ bus }) {
                     </div>
 
                     <button
-                        onClick={() => window.location.href = `/booking/${bus.scheduleId}`}
+                        onClick={() => window.location.hash = `/booking/${bus.scheduleId}`}
                         className="group/book w-full bg-gradient-to-r from-primary via-blue-500 to-cyan-500 text-white py-4 px-6 rounded-xl font-bold text-base hover:shadow-2xl hover:shadow-primary/50 transition-all duration-400 hover:scale-110 active:scale-95 border-2 border-primary/30 hover:border-primary/60 relative overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover/book:opacity-100 transition-opacity duration-300"></div>

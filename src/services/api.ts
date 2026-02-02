@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    // baseURL: 'https://easy-bus-backend-1.onrender.com/api',
+    //baseURL: 'https://easy-bus-backend-1.onrender.com/api',
     baseURL: 'https://bus-api.nkaujntseeg.com/api', // Use custom domain backend
     headers: {
         'Content-Type': 'application/json',
@@ -24,7 +24,8 @@ api.interceptors.response.use(
         if (error.response?.status === 401) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            window.location.href = '/login';
+            // window.location.href = '/login';
+            window.location.hash = '/login';
         }
         return Promise.reject(error);
     }

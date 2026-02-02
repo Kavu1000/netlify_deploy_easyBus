@@ -240,7 +240,7 @@ export default function ScheduleSection() {
                                                 </span>
                                                 <span className="text-foreground font-bold text-lg">{departure.price} LAK</span>
                                                 <button
-                                                    onClick={() => window.location.href = `/booking/${departure.scheduleId}`}
+                                                    onClick={() => window.location.hash = `/booking/${departure.scheduleId}`}
                                                     className="px-5 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                                                 >
                                                     Book

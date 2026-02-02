@@ -35,7 +35,7 @@ export default function SearchPage() {
             } catch (error) {
                 console.error("Failed to fetch cities:", error)
                 // Fallback to some default cities if API fails
-                setCities(["Vientiane", "Luang Prabang", "Pakse", "Savannakhet", "Thakhek"])
+                setCities(["Vientiane", "Luang Prabang", "Pakse", "Paksun", "Pakson", "Savannakhet", "Thakhek"])
             }
         }
         fetchCities()
